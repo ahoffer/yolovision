@@ -33,7 +33,7 @@ class DetectionApp:
         self.detector.initialize()
 
         # Initialize output and display
-        self.sink = FileVideoSink(self.config.output_video, metadata['fps'], metadata['width'], metadata['height'])
+        self.sink = FileVideoSink(self.config, metadata['fps'], metadata['width'], metadata['height'])
         self.sink.initialize()
         self.ui.display.initialize()
 

@@ -1,11 +1,12 @@
 import cv2
 
+from AppConfig import AppConfig
 from VideoSink import VideoSink
 
 
 class FileVideoSink(VideoSink):
-    def __init__(self, output_path, fps, width, height):
-        self.output_path = output_path
+    def __init__(self, config: AppConfig, fps, width, height):
+        self.config = config
         self.fps = fps
         self.width = width
         self.height = height
@@ -13,7 +14,7 @@ class FileVideoSink(VideoSink):
 
     def initialize(self):
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        self.writer = cv2.VideoWriter(self.output_path, fourcc, self.fps, (self.width, self.height))
+        self.writer = cv2.VideoWriter(self.config.output_video, fourcc, self.fps, (self.width, self.height))
         return self
 
     def write_frame(self, frame):

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# import pydevd_pycharm
 import torch
 
 from AppConfig import AppConfig
@@ -11,7 +12,6 @@ def main():
             model_path="yolov8n.pt",
             input_video='/home/aaron/Videos/tank-cars-people.mp4',
             output_video='/home/aaron/Videos/output.mp4',
-            confidence_interval=4,
             display_size=(1920, 1080),
             loop_video=True,
             confidence_threshold=0.5,
