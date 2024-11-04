@@ -3,9 +3,10 @@ import cv2
 from AppConfig import AppConfig
 from VideoSource import VideoSource
 
+
 class FileVideoSource(VideoSource):
     def __init__(self, config: AppConfig):
-        self.config=config
+        self.config = config
         self.cap = None
         self.metadata = {}
 

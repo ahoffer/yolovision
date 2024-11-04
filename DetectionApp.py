@@ -10,7 +10,7 @@ from YOLODetector import YOLODetector
 
 
 class DetectionApp:
-    def __init__(self, config : AppConfig):
+    def __init__(self, config: AppConfig):
         self.config = config
         self.source = FileVideoSource(config)
         self.ui = UserInterface(DisplayWindow(config))
