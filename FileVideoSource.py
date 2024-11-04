@@ -15,9 +15,9 @@ class FileVideoSource(VideoSource):
             raise ValueError(f"Could not open input video: {self.input_path}")
 
         self.metadata = {'fps': int(self.cap.get(cv2.CAP_PROP_FPS)),
-            'width': int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-            'height': int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
-            'total_frames': int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))}
+                         'width': int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
+                         'height': int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+                         'total_frames': int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))}
         return self
 
     def read_frame(self):

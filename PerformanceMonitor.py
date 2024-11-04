@@ -24,4 +24,4 @@ class PerformanceMonitor:
 
         avg_time = sum(self.processing_times) / len(self.processing_times)
         return {'avg_fps': 1.0 / avg_time, 'avg_frame_time': avg_time * 1000,  # in ms
-            'frame_count': self.frame_count, 'loop_count': self.loop_count}
+                'frame_count': self.frame_count, 'loop_count': self.loop_count}

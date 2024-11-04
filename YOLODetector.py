@@ -49,7 +49,7 @@ class YOLODetector:
 
                 # Draw label background
                 cv2.rectangle(annotated_frame, (int(x1), int(y1 - text_height - 5)), (int(x1 + text_width), int(y1)),
-                    (0, 255, 0), -1)
+                              (0, 255, 0), -1)
 
                 # Draw label text
                 cv2.putText(annotated_frame, label, (int(x1), int(y1 - 5)), font, font_scale, (0, 0, 0), thickness)

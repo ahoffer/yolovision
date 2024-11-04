@@ -3,10 +3,12 @@
 from AppConfig import AppConfig
 from DetectionApp import DetectionApp
 
+
 def main():
     try:
         config = AppConfig(model_path="yolov8n.pt", input_video='/home/aaron/Videos/tank-cars-people.mp4',
-                           output_video='/home/aaron/Videos/output.mp4', confidence_interval=4, display_size=(1920, 1080),
+                           output_video='/home/aaron/Videos/output.mp4', confidence_interval=4,
+                           display_size=(1920, 1080),
                            loop_video=True)
 
         app = DetectionApp(config)
