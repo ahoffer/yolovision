@@ -1,124 +1,140 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+#! /usr/bin/python3
 
-"""
-YOLO Object Detection Script
-This script performs object detection on video files using YOLO models.
-Author: Assistant
-License: MIT
-"""
-
-import cv2
 import torch
+import cv2
 from ultralytics import YOLO
+from pathlib import Path
+import time
 
 
-class ObjectDetector:
-    def __init__(self, model_path='yolov8n.pt', conf_threshold=0.5):
+class YOLODetector:
+    def __init__(self, model_path):
         """
-        Initialize the object detector
+        Initialize YOLO detector with automatic device selection
+
         Args:
-            model_path: Path to YOLO model weights
-            conf_threshold: Confidence threshold for detections
+            model_path (str): Path to the YOLO model weights
         """
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.model = YOLO(model_path)
-        self.conf_threshold = conf_threshold
+        self.model_path = model_path
+        self.device = self._get_optimal_device()
+        self.model = None
+        self.setup_model()
 
-    def process_video(self, input_path, output_path):
-        """
-        Process video file and save output with detected objects
-        Args:
-            input_path: Path to input video
-            output_path: Path to save output video
-        """
-        # Open video capture
-        cap = cv2.VideoCapture(input_path)
-        if not cap.isOpened():
-            raise ValueError("Error opening video file")
+    def _get_optimal_device(self):
+        if torch.cuda.is_available():
+            try:
+                torch.cuda.current_device()
+                return 'cuda'
+            except Exception as e:
+                print(f"CUDA initialization failed: {e}")
+                print("Falling back to CPU")
+                return 'cpu'
+        return 'cpu'
 
-        # Get video properties
-        frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        fps = int(cap.get(cv2.CAP_PROP_FPS))
-
-        # Initialize video writer
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        out = cv2.VideoWriter(output_path, fourcc, fps, (frame_width, frame_height))
-
+    def setup_model(self):
         try:
+            self.model = YOLO(self.model_path)
+            print(f"Model loaded successfully on {self.device}")
+        except Exception as e:
+            raise RuntimeError(f"Failed to load YOLO model: {e}")
+
+    def process_video(self, input_video, output_video):
+        """
+        Process video with YOLO detection while maintaining original FPS and displaying output
+
+        Args:
+            input_video (str): Path to input video file
+            output_video (str): Path to output video file
+        """
+        try:
+            # Open the input video
+            cap = cv2.VideoCapture(input_video)
+            if not cap.isOpened():
+                raise ValueError(f"Could not open input video: {input_video}")
+
+            # Get video properties
+            fps = int(cap.get(cv2.CAP_PROP_FPS))
+            width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+            print(f"Input video: {input_video}")
+            print(f"Output video: {output_video}")
+            print(f"Input video FPS: {fps}")
+            print(f"Resolution: {width}x{height}")
+
+            # Create output video writer
+            fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+            out = cv2.VideoWriter(
+                output_video,
+                fourcc,
+                fps,
+                (width, height)
+            )
+
+            frame_count = 0
+            frame_time = 1 / fps  # Time per frame in seconds
+
+            # Create window for display
+            cv2.namedWindow('YOLO Detection', cv2.WINDOW_NORMAL)
+
             while cap.isOpened():
+                start_time = time.time()  # Start timing for FPS control
+
                 ret, frame = cap.read()
                 if not ret:
                     break
 
-                # Perform detection
+                # Process frame with YOLO
                 results = self.model(frame, device=self.device)[0]
 
-                # Process detections
-                annotated_frame = self.draw_detections(frame, results)
+                # Draw detection boxes
+                annotated_frame = results.plot()
 
-                # Write frame
+                # Write and display frame
                 out.write(annotated_frame)
+                cv2.imshow('YOLO Detection', annotated_frame)
 
-                # Display progress (optional)
-                cv2.imshow('Processing...', annotated_frame)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
+                # FPS control and exit condition
+                elapsed_time = time.time() - start_time
+                wait_time = max(1, int((frame_time - elapsed_time) * 1000))
+                if cv2.waitKey(wait_time) & 0xFF == ord('q'):
+                    print("\nProcessing interrupted by user")
                     break
 
-        finally:
+                frame_count += 1
+                if frame_count % 30 == 0:
+                    progress = (frame_count / total_frames) * 100
+                    current_fps = 1.0 / (time.time() - start_time)
+                    print(f"Processing: {progress:.1f}% complete (FPS: {current_fps:.1f})")
+
+            # Release resources
             cap.release()
             out.release()
             cv2.destroyAllWindows()
 
-    def draw_detections(self, frame, results):
-        """
-        Draw bounding boxes and labels on frame
-        Args:
-            frame: Input frame
-            results: YOLO detection results
-        Returns:
-            Annotated frame
-        """
-        for detection in results.boxes.data:
-            if detection[4] >= self.conf_threshold:
-                x1, y1, x2, y2 = map(int, detection[:4])
-                conf = float(detection[4])
-                class_id = int(detection[5])
+            print("\nVideo processing completed")
+            print(f"Output saved to: {output_video}")
 
-                # Get class name
-                class_name = results.names[class_id]
-
-                # Draw bounding box
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-
-                # Create label with class name and confidence
-                label = f'{class_name} {conf:.2f}'
-
-                # Calculate label size and position
-                (label_width, label_height), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
-
-                # Draw label background
-                cv2.rectangle(frame, (x1, y1 - label_height - 10), (x1 + label_width + 10, y1), (0, 255, 0), -1)
-
-                # Draw label text
-                cv2.putText(frame, label, (x1 + 5, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
-
-        return frame
+        except Exception as e:
+            # Clean up resources in case of error
+            if 'cap' in locals():
+                cap.release()
+            if 'out' in locals():
+                out.release()
+            cv2.destroyAllWindows()
+            raise RuntimeError(f"Video processing failed: {e}")
 
 
 def main():
-    # Initialize detector
-    detector = ObjectDetector(model_path='./yolov8n.pt',  # Use tiny model for faster inference
-        conf_threshold=0.5  # Adjust confidence threshold as needed
-    )
-
-    # Process video
-    input_video = '/home/aaron/Videos/tank-cars-people.mp4'  # Replace with your input video path
-    output_video = '/home/aaron/Videos/output.mp4'  # Replace with desired output path
-
-    detector.process_video(input_video, output_video)
+    try:
+        detector = YOLODetector("yolov8n.pt")  # or your model path
+        input_video = '/home/aaron/Videos/tank-cars-people.mp4'
+        output_video = '/home/aaron/Videos/output.mp4'
+        detector.process_video(input_video, output_video)
+    except Exception as e:
+        print(f"Error occurred: {e}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
