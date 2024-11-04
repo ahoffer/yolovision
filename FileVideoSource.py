@@ -1,18 +1,18 @@
 import cv2
 
+from AppConfig import AppConfig
 from VideoSource import VideoSource
 
-
 class FileVideoSource(VideoSource):
-    def __init__(self, input_path):
-        self.input_path = input_path
+    def __init__(self, config: AppConfig):
+        self.config=config
         self.cap = None
         self.metadata = {}
 
     def initialize(self):
-        self.cap = cv2.VideoCapture(self.input_path)
+        self.cap = cv2.VideoCapture(self.config.input_video)
         if not self.cap.isOpened():
-            raise ValueError(f"Could not open input video: {self.input_path}")
+            raise ValueError(f"Could not open input video: {self.config.input_video}")
 
         self.metadata = {'fps': int(self.cap.get(cv2.CAP_PROP_FPS)),
                          'width': int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)),

@@ -1,5 +1,4 @@
-from ConfidenceTracker import ConfidenceTracker
-from DetectionConfig import DetectionConfig
+from AppConfig import AppConfig
 from DisplayWindow import DisplayWindow
 from FileVideoSink import FileVideoSink
 from FileVideoSource import FileVideoSource
@@ -11,10 +10,10 @@ from YOLODetector import YOLODetector
 
 
 class DetectionApp:
-    def __init__(self, config):
+    def __init__(self, config : AppConfig):
         self.config = config
-        self.source = FileVideoSource(config.input_video)
-        self.ui = UserInterface(DisplayWindow(window_size=config.display_size))
+        self.source = FileVideoSource(config)
+        self.ui = UserInterface(DisplayWindow(config))
         self.performance_monitor = PerformanceMonitor()
         self.detector = None
         self.sink = None
@@ -30,9 +29,7 @@ class DetectionApp:
         self.frame_rate_controller = FrameRateController(metadata['fps'])
 
         # Initialize detector
-        confidence_tracker = ConfidenceTracker(self.config.confidence_interval)
-        detector_config = DetectionConfig(self.config.model_path)
-        self.detector = YOLODetector(detector_config, confidence_tracker)
+        self.detector = YOLODetector(self.config)
         self.detector.initialize()
 
         # Initialize output and display

@@ -1,5 +1,6 @@
-torch>=1.7.0
+torch
 torchvision>=0.8.1
-opencv-python>=4.5.1
+opencv-python
 ultralytics==8.0.20  # Specify the version if you are using ultralytics/yolov5 hub loading
 numpy>=1.19.5
+pydevd-pycharm>=243.21565.33

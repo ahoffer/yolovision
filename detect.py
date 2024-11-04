@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import torch
 
 from AppConfig import AppConfig
 from DetectionApp import DetectionApp
@@ -6,10 +7,17 @@ from DetectionApp import DetectionApp
 
 def main():
     try:
-        config = AppConfig(model_path="yolov8n.pt", input_video='/home/aaron/Videos/tank-cars-people.mp4',
-                           output_video='/home/aaron/Videos/output.mp4', confidence_interval=4,
-                           display_size=(1920, 1080),
-                           loop_video=True)
+        config = AppConfig(
+            model_path="yolov8n.pt",
+            input_video='/home/aaron/Videos/tank-cars-people.mp4',
+            output_video='/home/aaron/Videos/output.mp4',
+            confidence_interval=4,
+            display_size=(1920, 1080),
+            loop_video=True,
+            confidence_threshold=0.5,
+            batch_size=1,
+            detector='cuda' if torch.cuda.is_available() else 'cpu'
+        )
 
         app = DetectionApp(config)
         app.initialize()
@@ -21,4 +29,5 @@ def main():
 
 
 if __name__ == "__main__":
+    # pydevd_pycharm.settrace('localhost', port=5678, stdoutToServer=True, stderrToServer=True)
     main()
