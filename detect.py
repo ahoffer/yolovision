@@ -9,7 +9,7 @@ from DetectionApp import DetectionApp
 def main():
     try:
         config = AppConfig(
-            model_path="yolov8n.pt",
+            model_path="yolov8n",
             input_video='/home/aaron/Videos/tank-cars-people.mp4',
             output_video='/home/aaron/Videos/output.mp4',
             display_size=(1920, 1080),
@@ -29,5 +29,5 @@ def main():
 
 
 if __name__ == "__main__":
-    pydevd_pycharm.settrace('localhost', port=5678, stdoutToServer=True, stderrToServer=True)
+    # pydevd_pycharm.settrace('localhost', port=5678, stdoutToServer=True, stderrToServer=True)
     main()

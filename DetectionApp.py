@@ -17,7 +17,7 @@ class DetectionApp:
         self.source.initialize()
         metadata = self.source.get_metadata()
         displaySink = DisplaySink(self.config)
-        displaySink.targetFps = metadata['fps']
+        displaySink.targetFramerate = metadata['fps']
         self.ui = UserInterface(displaySink)
 
         # Create pipeline
