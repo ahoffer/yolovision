@@ -42,5 +42,5 @@ htmlcov/
 #Intellij
 .idea/
 
-#Other
-yolov8n.pt
+#Binary
+yolov*.pt
