@@ -19,17 +19,27 @@ class DisplaySink(VideoSink):
     def initialize(self):
         cv2.namedWindow("video", cv2.WINDOW_NORMAL | cv2.WINDOW_GUI_NORMAL)
         cv2.resizeWindow("video", *self.windowSize)
-        self.frameRateController  = FramerateController()
+        self.frameRateController  = FramerateController(self.targetFramerate, 1)
         self.last_frame_time = time.time()
         self.start_time = self.last_frame_time
         return self
 
     def process_frame(self, frame):
-        self.frameRateController.target_fps = self.targetFramerate
+        annotated_frame = frame.copy()
+        cv2.putText(
+            annotated_frame,
+            f"FPS {self.frameRateController.actual_fps:.0f}",
+            (10, 50),
+            cv2.FONT_HERSHEY_DUPLEX,
+            1,
+            (0, 255, 0),
+            1
+        )
+
         self.frameRateController.wait_for_next_frame()
 
         # Display frame
-        cv2.imshow("video", frame)
+        cv2.imshow("video", annotated_frame)
 
         self.frameRateController.update_stats()
 
