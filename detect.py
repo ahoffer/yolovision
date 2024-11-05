@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# import pydevd_pycharm
+import pydevd_pycharm
 import torch
 
 from AppConfig import AppConfig
@@ -25,9 +25,9 @@ def main():
         print("\nVideo processing completed")
 
     except Exception as e:
-        print(f"Error occurred: {e}")
+        raise
 
 
 if __name__ == "__main__":
-    # pydevd_pycharm.settrace('localhost', port=5678, stdoutToServer=True, stderrToServer=True)
+    pydevd_pycharm.settrace('localhost', port=5678, stdoutToServer=True, stderrToServer=True)
     main()

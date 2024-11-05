@@ -7,7 +7,7 @@ class VideoSink(ABC):
         pass
 
     @abstractmethod
-    def write_frame(self, frame):
+    def process_frame(self, frame):
         pass
 
     @abstractmethod

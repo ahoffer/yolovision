@@ -8,11 +8,13 @@ class YOLODetector:
     def __init__(self, config: AppConfig):
         self.config = config
         self.model = None
-        self.confidence_threshold = self.config.confidence_threshold
+        self.confidence_threshold = config.confidence_threshold
 
     def initialize(self):
         try:
             self.model = YOLO(self.config.model_path)
+            if not self.model:
+                raise RuntimeError("Model not initialized. Call initialize() first.")
             print(f"Model loaded successfully on {self.config.detector}")
             print(f"Confidence threshold: {self.confidence_threshold}")
             return self

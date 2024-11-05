@@ -1,11 +1,13 @@
 import cv2
 
 from AppConfig import AppConfig
+from VideoSink import VideoSink
 
 
-class DisplayWindow:
+class DisplaySink(VideoSink):
     def __init__(self, config: AppConfig):
         self.config = config
+        self.targetFramerate = None
 
     def initialize(self):
         cv2.namedWindow("video", cv2.WINDOW_NORMAL | cv2.WINDOW_GUI_NORMAL)
@@ -13,7 +15,7 @@ class DisplayWindow:
         cv2.setMouseCallback("video", self.mouse_callback)
         return self
 
-    def show_frame(self, frame):
+    def process_frame(self, frame):
         cv2.imshow("video", frame)
 
     def is_window_closed(self):
@@ -22,7 +24,7 @@ class DisplayWindow:
         except:
             return True
 
-    def close(self):
+    def release(self):
         cv2.destroyWindow("video")
 
     def mouse_callback(self, event, x, y, flags, param):
