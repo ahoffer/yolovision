@@ -12,10 +12,11 @@ class DisplaySink(VideoSink):
         self.frame_count = 0
         self.start_time = None
         self.actual_fps = 0
+        self.windowSize = (640,640)
 
     def initialize(self):
         cv2.namedWindow("video", cv2.WINDOW_NORMAL | cv2.WINDOW_GUI_NORMAL)
-        cv2.resizeWindow("video", *self.config.display_size)
+        cv2.resizeWindow("video", *self.windowSize)
         self.last_frame_time = time.time()
         self.start_time = self.last_frame_time
         return self
