@@ -14,7 +14,7 @@ def main():
             output_video='/home/aaron/Videos/output.mp4',
             display_size=(1920, 1080),
             loop_video=True,
-            confidence_threshold=0.5,
+            confidence_threshold=0.3,
             batch_size=1,
             detector='cuda' if torch.cuda.is_available() else 'cpu'
         )
