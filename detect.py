@@ -9,8 +9,8 @@ from DetectionApp import DetectionApp
 def main():
     try:
         config = AppConfig(
-            model_path="yolov8n",
-            input_video='/home/aaron/Videos/tank-cars-people.mp4',
+            model_path="yolov8n.pt",
+            input_video='/home/aaron/Videos/one_car.mp4',
             output_video='/home/aaron/Videos/output.mp4',
             display_size=(1920, 1080),
             loop_video=True,
